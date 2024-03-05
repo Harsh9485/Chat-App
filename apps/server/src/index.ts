@@ -13,5 +13,5 @@ import SocketServer from "./services/socket";
     console.log(`server listening on ${PORT}`);
   });
 
-  socketServer;
+  socketServer.initListeners();
 })();
