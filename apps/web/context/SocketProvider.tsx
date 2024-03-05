@@ -7,7 +7,8 @@ interface SocketProviderProps {
 }
 interface ISocketContext {
   sendMessage: (msg: string) => any;
-  messages: string[];
+  messages: { message: string; id: string }[];
+  socket: Socket;
 }
 
 const SocketContext = React.createContext<ISocketContext | null>(null);
@@ -20,7 +21,7 @@ export const useSocket = () => {
 
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const [socket, setSocket] = useState<Socket>();
-  const [messages, setMessages] = useState<string[]>([]);
+  const [messages, setMessages] = useState([]); // Corrected the type here
 
   const sendMessage: ISocketContext["sendMessage"] = useCallback(
     (msg) => {
@@ -32,10 +33,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     [socket]
   );
 
-  const onMessageRes = useCallback((mes: string) => {
-    console.log("onMessageRes called msg: ", mes);
-    const { message } = JSON.parse(mes) as { message: string };
-    setMessages((prev) => [...prev, message]);
+  const onMessageRes = useCallback((msg: string) => {
+    console.log("onMessageRes called msg: ", msg);
+    const message = JSON.parse(msg) as { message: string; id: string };
+    console.log(message);
+    setMessages((prev) => [...prev, message]); // Adding the message to the state correctly
   }, []);
 
   useEffect(() => {
@@ -51,7 +53,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   }, []);
 
   return (
-    <SocketContext.Provider value={{ sendMessage, messages }}>
+    <SocketContext.Provider value={{ sendMessage, messages, socket }}>
       {children}
     </SocketContext.Provider>
   );
