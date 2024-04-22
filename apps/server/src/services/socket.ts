@@ -35,13 +35,15 @@ class SocketServer {
       console.log(`new Socket connection: ${socket.id}`);
       socket.on("event:message", async ({ message }: { message: String }) => {
         console.log(`new message: ${message}`);
-        await pub.publish("MESSAGES", JSON.stringify({ message }));
+        await pub.publish(
+          "MESSAGES",
+          JSON.stringify({ id: socket.id, message })
+        );
       });
     });
 
     sub.on("message", (chennel, message) => {
       console.log("sub call ");
-
       if (chennel === "MESSAGES") {
         io.emit("message", message);
       }

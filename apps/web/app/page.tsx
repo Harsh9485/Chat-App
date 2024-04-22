@@ -12,7 +12,6 @@ import {
   Typography,
 } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
 import React, { useState } from "react";
 import { useSocket } from "../context/SocketProvider";
 
@@ -24,14 +23,13 @@ const darkTheme = createTheme({
 
 export default function Page() {
   const [msg, setMsg] = useState("");
-  const { sendMessage, messages } = useSocket();
-
+  const { sendMessage, messages, socket } = useSocket();
   return (
     <ThemeProvider theme={darkTheme}>
       <div className="h-screen w-screen bg-[#28292a] text-slate-300 flex flex-col justify-center items-center">
         <h1 className="text-5xl text-center font-bold">Home Page</h1>
         <div className="h-3/4 w-[70%] bg-[#1f1f1f]">
-          {messages.map((msg, index) => {
+          {messages?.map((msg: any, index) => {
             return (
               <List
                 sx={{
@@ -43,10 +41,13 @@ export default function Page() {
               >
                 <ListItem alignItems="flex-start">
                   <ListItemAvatar>
-                    <Avatar alt={msg.name || "user"} src="" />
+                    <Avatar
+                      alt={msg["id"] === socket.id ? "you" : "user"}
+                      src=""
+                    />
                   </ListItemAvatar>
                   <ListItemText
-                    primary={msg.name || "user"}
+                    primary={msg.id === socket.id ? "you" : "user"}
                     secondary={
                       <React.Fragment>
                         <Typography
@@ -55,7 +56,7 @@ export default function Page() {
                           variant="body2"
                           color="text.primary"
                         >
-                          {msg}
+                          {msg.message}
                         </Typography>
                       </React.Fragment>
                     }
